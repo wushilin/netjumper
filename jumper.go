@@ -1,7 +1,7 @@
 package main
 
 import (
-        "./lib"
+        "github.com/wushilin/netjumper/lib"
         "fmt"
         "io"
         "log"
