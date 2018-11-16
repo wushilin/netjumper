@@ -22,7 +22,7 @@ var SECRET string = ""
 
 func main() {
         if len(os.Args) != 3 {
-                fmt.Printf("Usage: %s <port> <secret>", os.Args[0])
+                fmt.Printf("Usage: %s <port> <secret>\n", os.Args[0])
                 os.Exit(1)
         }
 	PORT_STR := os.Args[1]
