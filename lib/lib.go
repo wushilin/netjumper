@@ -162,7 +162,8 @@ func (v *Jumper) Dialer(netType string, connString string) (net.Conn, error) {
         }
         conn, err := net.DialTCP("tcp", nil, tcpAddr)
         if err != nil {
-                return nil, err
+		fmt.Println("Can't connect to jumphost, dialing directly")
+                return net.Dial(netType, connString)
         }
 
         // read challenge
