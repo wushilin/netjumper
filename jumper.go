@@ -21,13 +21,14 @@ func nextSessionId() uint64 {
 var SECRET string = ""
 
 func main() {
-        if len(os.Args) != 2 {
-                fmt.Printf("Usage: %s <secret>", os.Args[0])
+        if len(os.Args) != 3 {
+                fmt.Printf("Usage: %s <port> <secret>", os.Args[0])
                 os.Exit(1)
         }
-        SECRET = os.Args[1]
+	PORT_STR := os.Args[1]
+        SECRET = os.Args[2]
 
-        tcpAddr, err := net.ResolveTCPAddr("tcp", ":9527")
+        tcpAddr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf(":%s", PORT_STR))
         if err != nil {
                 log.Fatal(err)
         }
