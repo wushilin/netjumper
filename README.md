@@ -19,6 +19,41 @@ g) after 0 received from client, the client <-> jumphost <-> remote server will 
 
 This can work in any protocol. An example of such usage
 
+To setup the server
+```bash
+$ go get -u github.com/wushilin/netjumper
+
+$ cd $GOPATH/bin
+$ ./netjumper 9527 superBigSecret # this is the port to listen and the secret for client auth
+```
+
+You are done!
+
+If you want to setup as systemd linux service, you can do something like this
+```
+root@rhino ~# cat /etc/systemd/system/netjumper.service
+[Unit]
+Description=netjumper
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=wushilin
+ExecStart=/opt/GOPATH/bin/netjumper 9527 superBigSecret
+
+[Install]
+WantedBy=multi-user.target
+
+root@rhino ~# systemctl enable netjumper
+root@rhino ~# service netjumper start
+```
+The service now starts automatically. (even after crash). 
+Note: Please change the superBigSecret!!!
+
+To use it from client app, you have to import the Lib, nice wrapper Dialer function is already abstracted for you.
 ```go
 package main
 
