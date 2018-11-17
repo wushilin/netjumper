@@ -20,35 +20,29 @@ g) after 0 received from client, the client <-> jumphost <-> remote server will 
 This can work in any protocol. An example of such usage
 
 ```go
-import (        
-	njlib "github.com/wushilin/netjumper/lib"
-	njlib "github.com/wushilin/netjumper/lib"
+package main
+
+import (
+        njlib "github.com/wushilin/netjumper/lib"
+        "log"
+        "fmt"
 )
 
 func main() {
-	// creates a http client directly with a jump host, returns a *http.Client
-	// If you are interested in Http, you can just do this
-	httpClient := njlib.JumperClient("jumpServer.com:8899", "theJumpServerSecret")
-	
-	j := &Jumper{"jumpServer:8899", "secret"}
-	// j.Dial is a dial function, that can use to establish connection to any server any port via the jump host
-	tr := &http.Transport{
-                Dial:                j.Dialer,
-                TLSHandshakeTimeout: 2 * time.Second,
-                TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+        // creates a http client directly with a jump host, returns a *http.Client
+        // If you are interested in Http, you can just do this
+        httpClient := njlib.JumperClient("home.myhome.net:9527", "superBigSecret")
+        fmt.Println("Http Client is created", httpClient)
 
+        j := &njlib.Jumper{"home.myhome.net:9527", "superBigSecret"}
+        // if you want to do TCP, you can use this:
+        conn, err := j.Dialer("tcp", "www.google.com:443")
+        if err != nil {
+                log.Fatal("something is wrong")
         }
-
-        client := &http.Client{Transport: tr}
-
-	// or if you want to do TCP, FTP, you can use this:
-	conn, err := j.Dial("tcp", "www.google.com:443")
-	if err != nil {
-		log.Fatal("something is wrong")
-	}
+        fmt.Println("Conn is established")
         // do something with conn. It is a real connection with www.google.com:443, via the jump host
+        defer conn.Close()
 }
-
-
-Enjoy!
 ```
+Enjoy!
