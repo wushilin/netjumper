@@ -157,16 +157,13 @@ func (v *Jumper) Dialer(netType string, connString string) (net.Conn, error) {
         if netType != "tcp" {
                 return nil, errors.New("Only supports TCP")
         }
-        tcpAddr, err := net.ResolveTCPAddr("tcp", v.Remote)
-        if err != nil {
-                return nil, err
-        }
-        conn, err := net.DialTCP("tcp", nil, tcpAddr)
+        connTmp, err := net.DialTimeout("tcp", v.Remote, 5*time.Second)
         if err != nil {
 		fmt.Println("Can't connect to jumphost, dialing directly")
-                return net.Dial(netType, connString)
+                return net.DialTimeout(netType, connString, 5*time.Second)
         }
 
+	conn := connTmp.(*net.TCPConn)
         // read challenge
         challenge, err := ReadData(conn)
         if err != nil {
