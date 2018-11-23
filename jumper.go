@@ -87,15 +87,7 @@ func handle(clientConn *net.TCPConn, sessionId uint64) {
         }
 
         hostString := string(hostStringBuffer)
-        tcpAddr, err := net.ResolveTCPAddr("tcp", hostString)
-        if err != nil {
-                fmt.Printf("[session=%d] - Can't resolve %s\n", sessionId, hostString)
-                lib.WriteByte(clientConn, 1)
-                errorMessage := err.Error()
-                lib.WriteData(clientConn, []byte(errorMessage))
-                return
-        }
-        remoteConn, err := net.DialTCP("tcp", nil, tcpAddr)
+        remoteConnTmp, err := net.DialTimeout("tcp", hostString, 5*time.Second)
         if err != nil {
                 fmt.Printf("[session=%d] - Connect to %s failed: %s\n", sessionId, hostString, err.Error())
                 // write byte 1 for failure
@@ -104,6 +96,7 @@ func handle(clientConn *net.TCPConn, sessionId uint64) {
                 lib.WriteData(clientConn, []byte(errorMessage))
                 return
         }
+	remoteConn := remoteConnTmp.(*net.TCPConn)
 
         fmt.Printf("[session=%d] - Connected to %s\n", sessionId, hostString)
         lib.WriteByte(clientConn, 0)
