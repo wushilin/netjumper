@@ -135,10 +135,21 @@ func ReadData(r *net.TCPConn) ([]byte, error) {
 }
 
 
+func WrapDialer(dialer func(string, string) (net.Conn, error)) func (string, string) (net.Conn, error) {
+	return func(nwType string, host string) (net.Conn, error) {
+		res, err := dialer(nwType, host)
+		if err == nil {
+			return res, err
+		}
+		fmt.Println("Faulty dialer, dialing directly.")
+		return net.DialTimeout(nwType, host, 5*time.Second)
+	}
+}
+
 func JumperClient(remote string, secret string) *http.Client {
 	j := &Jumper{remote, secret}
         tr := &http.Transport{
-                Dial:                j.Dialer,
+                Dial:                WrapDialer(j.Dialer),
                 TLSHandshakeTimeout: 2 * time.Second,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 
